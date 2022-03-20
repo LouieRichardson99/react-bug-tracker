@@ -1,9 +1,5 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
-const database = require("../config/dbConnection");
-
-const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../config/.env") });
 
 const registerUser = async (full_name, email, password) => {
   const user = await User.findOne({ where: { email } });
@@ -53,16 +49,4 @@ const loginUser = async (email, password) => {
   };
 };
 
-const logoutUser = async (sessionId) => {
-  const query = "DELETE FROM sessions WHERE sid = ?";
-  const response = await database.query(query, { replacements: [sessionId] });
-
-  console.log(response);
-
-  return {
-    status: 200,
-    message: "Logged out successfully!",
-  };
-};
-
-module.exports = { registerUser, loginUser, logoutUser };
+module.exports = { registerUser, loginUser };

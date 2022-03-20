@@ -10,7 +10,7 @@ const userSignup = async (req, res) => {
     repeatPassword
   );
 
-  // Adding users session to DB.
+  // Adding users session to Redis.
   if (response?.status === 201) {
     req.session.userId = response.userId;
     req.session.save();
@@ -26,9 +26,10 @@ const userLogin = async (req, res) => {
 
   const response = await userService.loginUser(email, password);
 
-  // Adding users session to DB.
+  // Adding users session to Redis.
   if (response?.status === 200) {
     req.session.userId = response.userId;
+    req.session.save();
   }
 
   return res.status(response?.status).json({
@@ -37,8 +38,11 @@ const userLogin = async (req, res) => {
 };
 
 const userLogout = (req, res) => {
-  req.session.Key = "Hey";
-  // req.session.destroy();
+  req.session.destroy();
+
+  res.status(200).json({
+    message: "Log out successful!",
+  });
 };
 
 module.exports = { userSignup, userLogin, userLogout };

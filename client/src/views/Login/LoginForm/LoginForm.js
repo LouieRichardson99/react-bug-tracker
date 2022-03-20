@@ -6,7 +6,12 @@ export const LoginForm = () => {
   const { handleSubmit, register } = useForm();
 
   const onSubmit = (data) => {
-    axios({ method: "POST", url: "http://localhost:8080/users/login", data })
+    axios({
+      method: "POST",
+      url: "http://localhost:8080/users/login",
+      data,
+      withCredentials: true,
+    })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   };

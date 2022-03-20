@@ -3,13 +3,23 @@ const app = express();
 const cors = require("cors");
 const session = require("express-session");
 const port = 8080;
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
+
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "./config/.env") });
 
 // Redis setup
-let RedisStore = require("connect-redis")(session);
+const RedisStore = require("connect-redis")(session);
 const { createClient } = require("redis");
-let redisClient = createClient({ legacyMode: true });
+const redisClient = createClient({
+  legacyMode: true,
+  url: `redis://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+});
 redisClient.connect().catch(console.error);
 
+// CORS setup
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -18,15 +28,14 @@ app.use(
   })
 );
 
-const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "./config/.env") });
-
 // Sessions
 app.use(
   session({
-    store: new RedisStore({ client: redisClient }),
-    saveUninitialized: false,
-    secret: "keyboard cat",
+    store: new RedisStore({
+      client: redisClient,
+    }),
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
     resave: false,
   })
 );
@@ -40,10 +49,6 @@ const userRoute = require("./routes/user.route");
 // Routes
 app.use("/", indexRoute);
 app.use("/users", userRoute);
-
-app.use("/profile", (req, res) => {
-  res.json({ Session: req.session, SID: req.sessionID });
-});
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

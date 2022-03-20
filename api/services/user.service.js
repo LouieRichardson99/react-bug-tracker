@@ -3,8 +3,6 @@ const bcrypt = require("bcrypt");
 const userRepository = require("../repository/user.repository");
 
 const registerUser = async (fullName, email, password, repeatPassword) => {
-  console.log(fullName, email, password, repeatPassword);
-
   // Validate user input
   const schema = Joi.object({
     fullName: Joi.string().required().messages({
@@ -75,8 +73,4 @@ const loginUser = async (email, password) => {
   }
 };
 
-const logoutUser = async (sessionId) => {
-  return userRepository.logoutUser(sessionId);
-};
-
-module.exports = { registerUser, loginUser, logoutUser };
+module.exports = { registerUser, loginUser };
