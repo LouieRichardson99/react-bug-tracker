@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const { User } = require("../models");
 const bcrypt = require("bcrypt");
 
 const registerUser = async (full_name, email, password) => {
@@ -11,8 +11,6 @@ const registerUser = async (full_name, email, password) => {
     };
   }
 
-  // NEEDS ORG NAME ADDING!
-
   try {
     const user = await User.create({ full_name, email, password });
 
@@ -20,6 +18,8 @@ const registerUser = async (full_name, email, password) => {
       status: 201,
       message: "Account created successfully!",
       userId: user.id,
+      email: user.email,
+      user,
     };
   } catch {
     return {
@@ -33,7 +33,10 @@ const loginUser = async (email, password) => {
   const user = await User.findOne({ where: { email } });
 
   if (!user) {
-    return { status: 404, message: "User does not exist" };
+    return {
+      status: 404,
+      message: "No user exists with that email address",
+    };
   }
 
   const match = bcrypt.compareSync(password, user.password);
@@ -46,6 +49,7 @@ const loginUser = async (email, password) => {
     status: 200,
     message: "Login successful!",
     userId: user.id,
+    email: user.email,
   };
 };
 

@@ -5,29 +5,17 @@ const userRepository = require("../repository/user.repository");
 const registerUser = async (fullName, email, password, repeatPassword) => {
   // Validate user input
   const schema = Joi.object({
-    fullName: Joi.string().required().messages({
-      "string.empty": "Full Name cannot be an empty field",
-    }),
-    email: Joi.string().email().required().lowercase().messages({
-      "string.empty": "Email cannot be an empty field",
-      "string.email": "Email must be a valid email address",
-    }),
-    password: Joi.string()
-      .required()
-      .pattern(
-        /**
-         * Minimum of eight characters with at least one upper case letter, one lower case letter,
-         * one number, and one special character
-         */
-        new RegExp(
-          "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
-        )
+    fullName: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required().pattern(
+      /**
+       * Minimum of eight characters with at least one upper case letter, one lower case letter,
+       * one number, and one special character
+       */
+      new RegExp(
+        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
       )
-      .messages({
-        "string.pattern.base":
-          "Password must have at least eight characters, one upper case letter, one lower case letter, one number, and one special character",
-        "string.empty": "Password cannot be an empty field",
-      }),
+    ),
     repeatPassword: Joi.ref("password"),
   });
 
@@ -52,13 +40,8 @@ const registerUser = async (fullName, email, password, repeatPassword) => {
 const loginUser = async (email, password) => {
   // Validate user input
   const schema = Joi.object({
-    email: Joi.string().required().messages({
-      "string.empty": "Email cannot be an empty field",
-      "string.email": "Email must be a valid email address",
-    }),
-    password: Joi.string().required().messages({
-      "string.empty": "Password cannot be an empty field",
-    }),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   });
 
   try {

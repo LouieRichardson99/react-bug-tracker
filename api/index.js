@@ -24,7 +24,7 @@ app.use(
   cors({
     origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // Automatically send cookies along with each req
+    credentials: true,
   })
 );
 
@@ -34,7 +34,7 @@ app.use(
     store: new RedisStore({
       client: redisClient,
     }),
-    saveUninitialized: true,
+    saveUninitialized: false,
     secret: process.env.SESSION_SECRET,
     resave: false,
   })

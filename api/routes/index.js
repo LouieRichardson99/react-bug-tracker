@@ -4,8 +4,8 @@ const router = express.Router();
 // Middleware
 const { checkAuthorisation } = require("../middleware/authorisation");
 
-router.get("/", (req, res) => {
-  res.send("Hello world!");
+router.get("/", checkAuthorisation, (req, res) => {
+  res.send("You are authorized!");
 });
 
 module.exports = router;
