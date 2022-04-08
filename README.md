@@ -8,9 +8,9 @@
 
 - HTML5
 - CSS3 - Styled Components
-- Redux & Context API
 - TypeScript
 - React
+- Redux & Context API
 
 ### Back-end
 
