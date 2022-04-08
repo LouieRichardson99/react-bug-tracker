@@ -8,6 +8,7 @@
 
 - HTML5
 - CSS3 - Styled Components
+- Redux & Context API
 - TypeScript
 - React
 
