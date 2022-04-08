@@ -8,7 +8,7 @@
 
 - HTML5
 - CSS3 - Styled Components
-- JavaScript - ES6
+- TypeScript
 - React
 
 ### Back-end
@@ -18,7 +18,8 @@
 
 ### Database
 
-- MySQL
+- MySQL - Sequelize 
+- Redis - User Session Management
 
 ## The Front-end Explained
 
