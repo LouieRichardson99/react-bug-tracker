@@ -34,7 +34,8 @@ export const Input = styled.input<InputProps>`
   }
 `;
 
-export const ErrorMessage = styled.p`
+export const ErrorMessage = styled.label`
+  display: block;
   font-size: 0.875rem;
   color: #ef4444;
   margin-top: 0.5rem;

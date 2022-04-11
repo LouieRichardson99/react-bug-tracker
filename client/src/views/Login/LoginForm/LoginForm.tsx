@@ -18,9 +18,12 @@ const schema = yup
   .object({
     email: yup
       .string()
-      .email("Email must be a valid email address")
+      .email("Must be a valid email address")
       .required("Email is required"),
-    password: yup.string().required("Password is required"),
+    password: yup
+      .string()
+      .required("Password is required")
+      .min(8, "Password should be at least 8 characters"),
   })
   .required();
 
@@ -57,10 +60,12 @@ export const LoginForm: FC = () => {
       .then((res) => {
         if (res.status !== 200) return;
 
+        const hour = 3600000;
+
         const payload = {
           id: res.data.user.id,
           email: res.data.user.email,
-          expiresAt: new Date().getTime() + 100000,
+          expiresAt: new Date().getTime() + hour,
         };
 
         authContext.setAuthState({

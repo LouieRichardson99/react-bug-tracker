@@ -22,7 +22,7 @@ const schema = yup
     fullName: yup.string().required("Full name is required"),
     email: yup
       .string()
-      .email("Email must be a valid email address")
+      .email("Must be a valid email address")
       .required("Email is required"),
     organisationName: yup.string().required("Organisation name is required"),
     password: yup
@@ -70,10 +70,12 @@ export const SignupForm: FC = () => {
       .then((res) => {
         if (res.status !== 201) return;
 
+        const hour = 3600000;
+
         const payload = {
           id: res.data.user.id,
           email: res.data.user.email,
-          expiresAt: new Date().getTime() + 100000,
+          expiresAt: new Date().getTime() + hour,
         };
 
         authContext.setAuthState({

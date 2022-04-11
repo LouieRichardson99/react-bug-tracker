@@ -15,22 +15,31 @@ const userSignup = async (req, res) => {
   // Adding user session to Redis.
   if (response?.status === 201) {
     // If the user registration is successful, register the organisation
-    organisationService.registerOrganisation(organisationName, response.user);
+    try {
+      organisationService.registerOrganisation(organisationName, response.user);
 
-    const user = {
-      id: response.userId,
-      email: response.email,
-    };
+      const user = {
+        id: response.userId,
+        email: response.email,
+      };
 
-    req.session.user = user;
-    req.session.cookie.expires = new Date(Date.now() + 100000);
-    req.session.cookie.maxAge = 100000;
-    req.session.save();
+      const hour = 3600000;
 
-    return res.status(response?.status).json({
-      message: response?.message,
-      user,
-    });
+      req.session.user = user;
+      req.session.cookie.expires = new Date(Date.now() + hour);
+      req.session.cookie.maxAge = hour;
+      req.session.save();
+
+      return res.status(response?.status).json({
+        message: response?.message,
+        user,
+      });
+    } catch {
+      return res.status(500).json({
+        message:
+          "There seems to be a problem creating your organisation. Please try again",
+      });
+    }
   }
 
   return res.status(response?.status).json({
@@ -50,9 +59,11 @@ const userLogin = async (req, res) => {
       email: response.email,
     };
 
+    const hour = 3600000;
+
     req.session.user = user;
-    req.session.cookie.expires = new Date(Date.now() + 100000);
-    req.session.cookie.maxAge = 100000;
+    req.session.cookie.expires = new Date(Date.now() + hour);
+    req.session.cookie.maxAge = hour;
     req.session.save();
 
     return res.status(response?.status).json({
