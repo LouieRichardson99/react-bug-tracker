@@ -5,9 +5,9 @@ import { ExclamationCircleIcon } from "@heroicons/react/solid";
 
 interface FormValues {
   fullName?: string;
-  email: string;
+  email?: string;
   organisationName?: string;
-  password: string;
+  password?: string;
   repeatPassword?: string;
 }
 

@@ -35,6 +35,8 @@ const userSignup = async (req, res) => {
         user,
       });
     } catch {
+      // TODO: Remove newly created user from database
+
       return res.status(500).json({
         message:
           "There seems to be a problem creating your organisation. Please try again",
@@ -87,4 +89,41 @@ const userLogout = (req, res) => {
   });
 };
 
-module.exports = { userSignup, userLogin, userLogout };
+const userResetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  userService.resetUserPassword(email);
+
+  /**
+   * Always send a status code 200 and success message even if
+   * there is no user matching the email.
+   *
+   * This will prevent giving attackers any indication that they should
+   * try a different email address.
+   */
+  return res.status(200).json({
+    message: "Password reset email has been sent!",
+  });
+};
+
+const userUpdatePassword = async (req, res) => {
+  const { token, password, repeatPassword } = req.body;
+
+  const response = await userService.updateUserPassword(
+    token,
+    password,
+    repeatPassword
+  );
+
+  return res.status(response?.status).json({
+    message: response?.message,
+  });
+};
+
+module.exports = {
+  userSignup,
+  userLogin,
+  userLogout,
+  userResetPassword,
+  userUpdatePassword,
+};

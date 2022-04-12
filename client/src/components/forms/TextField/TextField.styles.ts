@@ -25,7 +25,7 @@ export const Input = styled.input<InputProps>`
   color: ${(props) => (props.isError ? "#EF4444" : "#383838")};
 
   &::placeholder {
-    color: #4c4c4c;
+    color: #8c8c8c;
   }
 
   &:focus {

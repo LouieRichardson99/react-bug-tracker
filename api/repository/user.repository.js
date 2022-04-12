@@ -53,4 +53,44 @@ const loginUser = async (email, password) => {
   };
 };
 
-module.exports = { registerUser, loginUser };
+const resetUserPassword = async (email) => {
+  const user = await User.findOne({ where: { email } });
+
+  if (!user) {
+    return {
+      status: 404,
+      message: "No user exists with that email address",
+    };
+  }
+
+  return {
+    status: 200,
+    user: {
+      id: user.id,
+      email: user.email,
+    },
+  };
+};
+
+const updateUserPassword = async (id, password) => {
+  User.update(
+    { password },
+    {
+      where: {
+        id,
+      },
+    }
+  );
+
+  return {
+    status: 200,
+    message: "Password reset successful!",
+  };
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  resetUserPassword,
+  updateUserPassword,
+};

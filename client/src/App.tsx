@@ -10,6 +10,8 @@ import { SignupPage } from "./views/Signup/SignupPage/SignupPage";
 import { AuthProvider } from "./context/AuthContext";
 import { DashboardPage } from "./views/Dashboard/DashboardPage/DashboardPage";
 import "./index.css";
+import { ForgotPasswordPage } from "./views/ForgotPassword/ForgotPasswordPage/ForgotPasswordPage";
+import { UpdatePasswordPage } from "./views/UpdatePassword/UpdatePasswordPage/UpdatePasswordPage";
 
 interface RouteProps {
   children?: ReactNode;
@@ -49,6 +51,11 @@ function App() {
           />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/update-password/:token"
+            element={<UpdatePasswordPage />}
+          />
         </Routes>
       </Router>
     </AuthProvider>

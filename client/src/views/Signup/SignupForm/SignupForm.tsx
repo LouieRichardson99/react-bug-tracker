@@ -11,9 +11,9 @@ import { Spinner } from "../../../icons/Spinner";
 
 type FormValues = {
   fullName?: string;
-  email: string;
+  email?: string;
   organisationName?: string;
-  password: string;
+  password?: string;
   repeatPassword?: string;
 };
 

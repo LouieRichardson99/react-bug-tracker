@@ -27,6 +27,7 @@ export const NoAccountText = styled.p`
   display: flex;
   gap: 0.5rem;
   justify-content: center;
+  padding: 0 1rem;
 
   & > a {
     color: #7db46c;
@@ -36,5 +37,9 @@ export const NoAccountText = styled.p`
     &:hover {
       color: #69a357;
     }
+  }
+
+  @media (max-width: 600px) {
+    justify-content: left;
   }
 `;

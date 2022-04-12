@@ -10,6 +10,11 @@ export const Form = styled.form`
   margin: 0 auto;
 `;
 
+export const Wrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 export const Button = styled.button`
   display: block;
   width: fit-content;
@@ -39,5 +44,15 @@ export const Button = styled.button`
   @media (max-width: 600px) {
     width: 100%;
     padding: 0.75rem;
+  }
+`;
+
+export const ForgotPasswordText = styled.div`
+  margin: auto 0;
+  font-size: 0.875rem;
+
+  & > a {
+    color: #383838;
+    text-decoration: none;
   }
 `;

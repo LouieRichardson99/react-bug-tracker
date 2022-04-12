@@ -1,17 +1,17 @@
 import { FC, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { TextField } from "../../../components/forms/TextField/TextField";
 import { AuthContext } from "../../../context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Form, Button } from "./LoginForm.styles";
+import { Form, Button, Wrapper, ForgotPasswordText } from "./LoginForm.styles";
 import { Spinner } from "../../../icons/Spinner";
 
 type FormValues = {
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
 };
 
 const schema = yup
@@ -113,9 +113,14 @@ export const LoginForm: FC = () => {
         register={register}
         error={errors.password || responseError?.password}
       />
-      <Button aria-label="Sign in" type="submit">
-        {!loading ? "Sign in" : <Spinner />}
-      </Button>
+      <Wrapper>
+        <Button aria-label="Sign in" type="submit">
+          {!loading ? "Sign in" : <Spinner />}
+        </Button>
+        <ForgotPasswordText>
+          <Link to="/forgot-password">Forgot Password?</Link>
+        </ForgotPasswordText>
+      </Wrapper>
     </Form>
   );
 };
