@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
+import { BrowserRouter as Router } from "react-router-dom";
 import { LoginForm } from "./LoginForm";
 
 // Mock useNavigate() function
@@ -9,7 +10,12 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("LoginForm", () => {
-  const setup = () => render(<LoginForm />);
+  const setup = () =>
+    render(
+      <Router>
+        <LoginForm />
+      </Router>
+    );
 
   test("inputs should initially be empty", async () => {
     setup();
@@ -60,7 +66,7 @@ function getEmailInput() {
 }
 
 function getPasswordInput() {
-  return screen.getByLabelText(/password/i);
+  return screen.getByLabelText("Password");
 }
 
 function getSubmitButton() {

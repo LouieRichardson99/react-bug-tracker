@@ -1,16 +1,23 @@
 const userService = require("../services/user.service");
 const organisationService = require("../services/organisation.service");
 
-const userSignup = async (req, res) => {
-  const { fullName, email, organisationName, password, repeatPassword } =
-    req.body;
+const userData = async (req, res) => {
+  const { id } = req.session.user;
 
-  const response = await userService.registerUser(
-    fullName,
-    email,
-    password,
-    repeatPassword
-  );
+  const response = await userService.getUser(id);
+
+  if (response?.status === 200) {
+    return res.status(response.status).json({
+      message: response?.message,
+      data: response?.data,
+    });
+  }
+};
+
+const userSignup = async (req, res) => {
+  const { fullName, email, organisationName, password } = req.body;
+
+  const response = await userService.registerUser(fullName, email, password);
 
   // Adding user session to Redis.
   if (response?.status === 201) {
@@ -120,10 +127,25 @@ const userUpdatePassword = async (req, res) => {
   });
 };
 
+const userUploadProfileImage = async (req, res) => {
+  if (req?.file) {
+    const { path } = req.file;
+    const userId = req.session.user.id;
+
+    const response = await userService.uploadUserProfileImage(path, userId);
+
+    return res.status(response?.status).json({
+      message: response?.message,
+    });
+  }
+};
+
 module.exports = {
+  userData,
   userSignup,
   userLogin,
   userLogout,
   userResetPassword,
   userUpdatePassword,
+  userUploadProfileImage,
 };

@@ -1,33 +1,37 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-  background-color: #f3f5ee;
+  background-color: #fafafa;
   min-height: 100vh;
   height: auto;
 `;
 
 export const Title = styled.h1`
-  font-size: 3rem;
+  font-size: 2.25rem;
   text-align: center;
   color: #383838;
   font-weight: 500;
-  padding: 3rem 1rem 0 1rem;
+  padding: 3rem 0.75rem 0 0.75rem;
+  margin-bottom: 1.5rem;
+  font-family: "DM Sans", sans-serif;
 
   @media (max-width: 750px) {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   @media (max-width: 600px) {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 `;
 
-export const ExistingAccountText = styled.p`
+export const CenteredText = styled.p`
   color: #383838;
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-  padding: 0 1rem;
+  padding: 0 0.75rem;
+  margin-top: 1rem;
+  padding-bottom: 2rem;
 
   & > a {
     color: #7db46c;

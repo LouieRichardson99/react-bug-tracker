@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
   padding: 2rem 0.75rem;
   max-width: 35rem;
   width: 100%;
@@ -13,6 +13,11 @@ export const Form = styled.form`
 export const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
 `;
 
 export const Button = styled.button`
@@ -21,15 +26,15 @@ export const Button = styled.button`
   background-color: #7db46c;
   border: none;
   color: #fff;
-  padding: 0 1rem;
+  padding: 0 1.25rem;
   border-radius: 5px;
   cursor: pointer;
   transition: 0.1s ease-in;
   display: flex;
   align-items: center;
-  font-weight: 500;
   height: 2.25rem;
   justify-content: center;
+  font-size: 1rem;
 
   &:hover {
     background-color: #69a357;
@@ -54,5 +59,9 @@ export const ForgotPasswordText = styled.div`
   & > a {
     color: #383838;
     text-decoration: none;
+  }
+
+  &:hover {
+    text-decoration: underline;
   }
 `;

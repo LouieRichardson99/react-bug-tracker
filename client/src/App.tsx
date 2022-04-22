@@ -12,6 +12,15 @@ import { DashboardPage } from "./views/Dashboard/DashboardPage/DashboardPage";
 import "./index.css";
 import { ForgotPasswordPage } from "./views/ForgotPassword/ForgotPasswordPage/ForgotPasswordPage";
 import { UpdatePasswordPage } from "./views/UpdatePassword/UpdatePasswordPage/UpdatePasswordPage";
+import { ThemeProvider } from "styled-components";
+
+const theme = {
+  colors: {
+    green: "hsl(106, 32%, 56%)",
+    red: "hsl(0, 58%, 58%)",
+    body: "hsl(0, 0%, 18%)",
+  },
+};
 
 interface RouteProps {
   children?: ReactNode;
@@ -24,9 +33,9 @@ const AuthenticatedRoute = ({ children }: RouteProps) => {
     return <Navigate to="/login" />;
   }
 
-  // Check if session has expired
   const user = JSON.parse(localStorage.getItem("user") || "");
 
+  // Check if session has expired
   if (user.expiresAt < new Date().getTime()) {
     localStorage.removeItem("user");
 
@@ -38,27 +47,29 @@ const AuthenticatedRoute = ({ children }: RouteProps) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <AuthenticatedRoute>
-                <DashboardPage />
-              </AuthenticatedRoute>
-            }
-          />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route
-            path="/update-password/:token"
-            element={<UpdatePasswordPage />}
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <AuthenticatedRoute>
+                  <DashboardPage />
+                </AuthenticatedRoute>
+              }
+            />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route
+              path="/update-password/:token"
+              element={<UpdatePasswordPage />}
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

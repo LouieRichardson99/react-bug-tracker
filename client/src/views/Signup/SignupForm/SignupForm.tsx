@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { TextField } from "../../../components/forms/TextField/TextField";
+import { PasswordField } from "../../../components/forms/PasswordField/PasswordField";
 import { AuthContext } from "../../../context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -14,7 +15,6 @@ type FormValues = {
   email?: string;
   organisationName?: string;
   password?: string;
-  repeatPassword?: string;
 };
 
 const schema = yup
@@ -29,13 +29,9 @@ const schema = yup
       .string()
       .required("Password is required")
       .matches(
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-        "Password must have at least eight characters, one upper case letter, one lower case letter, one number, and one special character"
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/,
+        "Password must have at least eight characters, one upper case letter, one lower case letter, and one number"
       ),
-    repeatPassword: yup
-      .string()
-      .required("Confirm password is required")
-      .oneOf([yup.ref("password"), null], "Passwords do not match"),
   })
   .required();
 
@@ -55,6 +51,14 @@ export const SignupForm: FC = () => {
   }
 
   const [responseError, setResponseError] = useState<ResponseErrorProps | null>(
+    null
+  );
+
+  interface OnChangeErrorProps {
+    password?: { message: string };
+  }
+
+  const [onChangeError, setOnChangeError] = useState<OnChangeErrorProps | null>(
     null
   );
 
@@ -99,6 +103,29 @@ export const SignupForm: FC = () => {
       .finally(() => setLoading(false));
   };
 
+  const handlePasswordStrength = (e: { target: { value: string } }) => {
+    if (e.target.value === "") {
+      return setOnChangeError(null);
+    }
+
+    const valid = e.target.value.match(
+      "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"
+    )
+      ? true
+      : false;
+
+    if (!valid) {
+      return setOnChangeError({
+        password: {
+          message:
+            "Password must have at least eight characters, one upper case letter, one lower case letter, and one number",
+        },
+      });
+    }
+
+    return setOnChangeError(null);
+  };
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <TextField
@@ -113,7 +140,7 @@ export const SignupForm: FC = () => {
         label="Email Address"
         name="email"
         type="email"
-        placeholder="you@example.com"
+        placeholder="example@bugzy.com"
         register={register}
         error={errors.email || responseError?.email}
       />
@@ -125,20 +152,12 @@ export const SignupForm: FC = () => {
         register={register}
         error={errors.organisationName}
       />
-      <TextField
+      <PasswordField
         label="Password"
         name="password"
-        type="password"
-        placeholder="•••••••••••••••"
+        onChange={handlePasswordStrength}
         register={register}
-        error={errors.password}
-      />
-      <TextField
-        label="Confirm Password"
-        name="repeatPassword"
-        type="password"
-        register={register}
-        error={errors.repeatPassword}
+        error={onChangeError?.password || errors.password}
       />
       <Button aria-label="register" type="submit">
         {!loading ? "Register" : <Spinner />}

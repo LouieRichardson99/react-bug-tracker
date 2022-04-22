@@ -7,8 +7,6 @@ interface FormValues {
   fullName?: string;
   email?: string;
   organisationName?: string;
-  password?: string;
-  repeatPassword?: string;
 }
 
 type Props = {

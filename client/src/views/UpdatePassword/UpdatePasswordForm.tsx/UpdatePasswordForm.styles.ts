@@ -41,3 +41,11 @@ export const Button = styled.button`
     padding: 0.75rem;
   }
 `;
+
+export const SuccessText = styled.p`
+  color: ${({ theme }) => theme.colors.green};
+`;
+
+export const ErrorText = styled.p`
+  color: ${({ theme }) => theme.colors.red};
+`;

@@ -23,8 +23,8 @@ export const Input = styled.input<InputProps>`
   border: none;
   border-radius: 5px;
   width: 100%;
-  font-size: 1rem;
   color: ${(props) => (props.isError ? "#EF4444" : "#383838")};
+  font-size: 1rem;
 
   &::placeholder {
     color: #8c8c8c;
@@ -42,4 +42,17 @@ export const ErrorMessage = styled.label`
   color: #ef4444;
   margin-top: 0.5rem;
   font-weight: 300;
+`;
+
+export const EyeIconButton = styled.button`
+  background: none;
+  border: none;
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.35rem;
+  height: 1.35rem;
+  color: #6c6c6c;
+  cursor: pointer;
 `;

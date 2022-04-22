@@ -17,6 +17,11 @@ const User = database.define("user", {
     allowNull: false,
     unique: true,
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: false,
+  },
   password: {
     type: DataTypes.STRING,
     allowNull: false,

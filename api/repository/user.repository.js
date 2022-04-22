@@ -1,5 +1,21 @@
-const { User } = require("../models");
+const { User, Organisation } = require("../models");
 const bcrypt = require("bcrypt");
+
+const userData = async (id) => {
+  const user = await User.findOne({
+    attributes: ["full_name", "id", "image", "email"],
+    where: id,
+    include: Organisation,
+  });
+
+  if (user) {
+    return {
+      status: 200,
+      message: "Fetch successful",
+      data: user,
+    };
+  }
+};
 
 const registerUser = async (full_name, email, password) => {
   const user = await User.findOne({ where: { email } });
@@ -88,9 +104,34 @@ const updateUserPassword = async (id, password) => {
   };
 };
 
+const uploadUserProfileImage = async (url, userId) => {
+  try {
+    User.update(
+      { image: url },
+      {
+        where: {
+          id: userId,
+        },
+      }
+    );
+
+    return {
+      status: 201,
+      message: "Uploaded profile image successfully",
+    };
+  } catch {
+    return {
+      status: 400,
+      message: "Upload failed",
+    };
+  }
+};
+
 module.exports = {
+  userData,
   registerUser,
   loginUser,
   resetUserPassword,
   updateUserPassword,
+  uploadUserProfileImage,
 };

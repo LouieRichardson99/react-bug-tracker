@@ -3,11 +3,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const userRepository = require("../repository/user.repository");
+const cloudinary = require("cloudinary");
 
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../config/.env") });
 
-const registerUser = async (fullName, email, password, repeatPassword) => {
+const getUser = async (id) => {
+  return userRepository.userData(id);
+};
+
+const registerUser = async (fullName, email, password) => {
   // Validate user input
   const schema = Joi.object({
     fullName: Joi.string().required(),
@@ -15,13 +20,10 @@ const registerUser = async (fullName, email, password, repeatPassword) => {
     password: Joi.string().required().pattern(
       /**
        * Minimum of eight characters with at least one upper case letter, one lower case letter,
-       * one number, and one special character
+       * and one number
        */
-      new RegExp(
-        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
-      )
+      new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
     ),
-    repeatPassword: Joi.ref("password"),
   });
 
   try {
@@ -29,7 +31,6 @@ const registerUser = async (fullName, email, password, repeatPassword) => {
       fullName,
       email,
       password,
-      repeatPassword,
     });
 
     // Hash password if validation is successful
@@ -84,6 +85,7 @@ const resetUserPassword = async (email) => {
       expiresIn: "15m",
     });
 
+    // TODO: Seperate into own mailer function
     const smtpTransporter = nodemailer.createTransport({
       host: "smtp-relay.sendinblue.com",
       port: 587,
@@ -97,7 +99,15 @@ const resetUserPassword = async (email) => {
       from: "Louie <louierich99@gmail.com",
       to: payload.email,
       subject: "Password Reset",
-      html: `<p>Here is the <a href=http://localhost:3000/update-password/${token}>link</a> to password reset form</p>`,
+      html: `<div>
+      <h1>Password Reset</h1>
+      <p>Follow this <a href=http://localhost:3000/update-password/${token}>link</a> to reset your password!</p>
+      <p>This link will be valid for 15 minutes.</p>
+      <p>
+        If you did not request to change your password, please ignore this
+        email.
+      </p>
+    </div>`,
     };
 
     smtpTransporter.sendMail(data);
@@ -116,11 +126,9 @@ const updateUserPassword = async (token, password, repeatPassword) => {
       password: Joi.string().required().pattern(
         /**
          * Minimum of eight characters with at least one upper case letter, one lower case letter,
-         * one number, and one special character
+         * and one number
          */
-        new RegExp(
-          "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
-        )
+        new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$")
       ),
       repeatPassword: Joi.ref("password"),
     });
@@ -147,9 +155,25 @@ const updateUserPassword = async (token, password, repeatPassword) => {
   }
 };
 
+const uploadUserProfileImage = async (imagePath, userId) => {
+  try {
+    const uploadResponse = await cloudinary.v2.uploader.upload(imagePath);
+    const { url } = uploadResponse;
+
+    return userRepository.uploadUserProfileImage(url, userId);
+  } catch {
+    return {
+      status: 400,
+      message: "Failed to upload profile image",
+    };
+  }
+};
+
 module.exports = {
+  getUser,
   registerUser,
   loginUser,
   resetUserPassword,
   updateUserPassword,
+  uploadUserProfileImage,
 };

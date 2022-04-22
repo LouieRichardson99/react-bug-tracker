@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import user from "@testing-library/user-event";
+import { BrowserRouter as Router } from "react-router-dom";
 import { SignupForm } from "./SignupForm";
 
 // Mock useNavigate() function
@@ -9,7 +10,12 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("SignupForm", () => {
-  const setup = () => render(<SignupForm />);
+  const setup = () =>
+    render(
+      <Router>
+        <SignupForm />
+      </Router>
+    );
 
   test("inputs should initially be empty", async () => {
     setup();
@@ -18,13 +24,11 @@ describe("SignupForm", () => {
     const emailInput = getEmailInput();
     const organisationInput = getOrganisationInput();
     const passwordInput = getPasswordInput();
-    const confirmPasswordInput = getConfirmPasswordInput();
 
     expect(fullnameInput).toHaveValue("");
     expect(emailInput).toHaveValue("");
     expect(organisationInput).toHaveValue("");
     expect(passwordInput).toHaveValue("");
-    expect(confirmPasswordInput).toHaveValue("");
   });
 
   test("should display 'required' errors when values are empty", async () => {
@@ -41,9 +45,6 @@ describe("SignupForm", () => {
       await screen.findByText("Organisation name is required")
     ).toBeInTheDocument();
     expect(await screen.findByText("Password is required")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Confirm password is required")
-    ).toBeInTheDocument();
   });
 
   test("should display invalid email input label", async () => {
@@ -65,19 +66,14 @@ describe("SignupForm", () => {
 
     const submitButton = getSubmitButton();
     const passwordInput = getPasswordInput();
-    const confirmPasswordInput = getConfirmPasswordInput();
 
     await user.type(passwordInput, "invalid password");
-    await user.type(confirmPasswordInput, "another password");
     await user.click(submitButton);
 
     expect(
       await screen.findByText(
-        "Password must have at least eight characters, one upper case letter, one lower case letter, one number, and one special character"
+        "Password must have at least eight characters, one upper case letter, one lower case letter, and one number"
       )
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("Passwords do not match")
     ).toBeInTheDocument();
   });
 });
@@ -103,10 +99,6 @@ function getOrganisationInput() {
 
 function getPasswordInput() {
   return screen.getByLabelText("Password");
-}
-
-function getConfirmPasswordInput() {
-  return screen.getByLabelText(/confirm password/i);
 }
 
 function getSubmitButton() {

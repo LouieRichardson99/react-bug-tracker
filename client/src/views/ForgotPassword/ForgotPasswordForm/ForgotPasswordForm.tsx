@@ -5,7 +5,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { TextField } from "../../../components/forms/TextField/TextField";
 import { Spinner } from "../../../icons/Spinner";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Button, Form, SuccessText } from "./ForgotPasswordForm.styles";
 
 type FormValues = {
   email?: string;
@@ -21,13 +22,24 @@ const schema = yup
   .required();
 
 export const ForgotPasswordForm: FC = () => {
-  const { handleSubmit, register } = useForm<FormValues>({
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: yupResolver(schema),
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  interface ResponseErrorProps {
+    email?: { message: string };
+  }
+
   const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [responseError, setResponseError] = useState<ResponseErrorProps | null>(
+    null
+  );
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     setLoading(true);
@@ -40,7 +52,7 @@ export const ForgotPasswordForm: FC = () => {
     })
       .then((res) => {
         if (res.status !== 200) {
-          setErrorMessage(res.data.message);
+          setResponseError({ email: { message: res.data.message } });
           return;
         }
 
@@ -55,20 +67,21 @@ export const ForgotPasswordForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <TextField
         label="Email Address"
         name="email"
         type="email"
-        placeholder="you@example.com"
+        placeholder="example@bugzy.com"
         register={register}
+        error={errors.email || responseError?.email}
       />
-      <button type="submit">{!loading ? "Reset Password" : <Spinner />}</button>
-      <p>
-        Back to <Link to="/login">login</Link>
-      </p>
-      <p>{successMessage}</p>
-      <p>{errorMessage}</p>
-    </form>
+      {!successMessage && (
+        <Button type="submit">
+          {!loading ? "Send Reset Link" : <Spinner />}
+        </Button>
+      )}
+      {successMessage && <SuccessText>{successMessage}</SuccessText>}
+    </Form>
   );
 };

@@ -2,10 +2,16 @@ import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { TextField } from "../../../components/forms/TextField/TextField";
+import { PasswordField } from "../../../components/forms/PasswordField/PasswordField";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Spinner } from "../../../icons/Spinner";
+import {
+  Button,
+  ErrorText,
+  Form,
+  SuccessText,
+} from "./UpdatePasswordForm.styles";
 
 type Props = {
   token?: string;
@@ -22,8 +28,8 @@ const schema = yup
       .string()
       .required("Password is required")
       .matches(
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-        "Password must have at least eight characters, one upper case letter, one lower case letter, one number, and one special character"
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/,
+        "Password must have at least eight characters, one upper case letter, one lower case letter, and one number"
       ),
     repeatPassword: yup
       .string()
@@ -42,8 +48,8 @@ export const UpdatePasswordForm: FC<Props> = (props) => {
 
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
 
+  const [responseError, setResponseError] = useState(null);
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setLoading(true);
 
@@ -60,7 +66,7 @@ export const UpdatePasswordForm: FC<Props> = (props) => {
     })
       .then((res) => {
         if (res.status !== 200) {
-          setErrorMessage(res.data.message);
+          setResponseError(res.data.message);
           return;
         }
 
@@ -69,33 +75,34 @@ export const UpdatePasswordForm: FC<Props> = (props) => {
         setTimeout(() => navigate("/login"), 1000);
       })
       .catch((err) => {
+        setResponseError(err.response.data.message);
         throw new Error(err.response.data.message);
       })
       .finally(() => setLoading(false));
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField
+    <Form onSubmit={handleSubmit(onSubmit)}>
+      <PasswordField
         label="New Password"
-        type="password"
         name="password"
-        placeholder="•••••••••••••••"
         register={register}
         error={errors.password}
       />
-      <TextField
+      <PasswordField
         label="Confirm Password"
-        type="password"
         name="repeatPassword"
         register={register}
         error={errors.repeatPassword}
+        showEye={false}
       />
-      <button type="submit">
-        {!loading ? "Update Password" : <Spinner />}
-      </button>
-      <p>{successMessage}</p>
-      <p>{errorMessage}</p>
-    </form>
+      {!successMessage && (
+        <Button type="submit">
+          {!loading ? "Reset Password" : <Spinner />}
+        </Button>
+      )}
+      {successMessage && <SuccessText>{successMessage}</SuccessText>}
+      {responseError && <ErrorText>{responseError}</ErrorText>}
+    </Form>
   );
 };

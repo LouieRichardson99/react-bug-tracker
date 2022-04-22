@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { TextField } from "../../../components/forms/TextField/TextField";
+import { PasswordField } from "../../../components/forms/PasswordField/PasswordField";
 import { AuthContext } from "../../../context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -101,15 +102,13 @@ export const LoginForm: FC = () => {
         label="Email Address"
         name="email"
         type="email"
-        placeholder="you@example.com"
+        placeholder="example@bugzy.com"
         register={register}
         error={errors.email || responseError?.email}
       />
-      <TextField
+      <PasswordField
         label="Password"
         name="password"
-        type="password"
-        placeholder="•••••••••••••••"
         register={register}
         error={errors.password || responseError?.password}
       />
