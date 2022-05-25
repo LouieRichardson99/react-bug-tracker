@@ -2,9 +2,9 @@
   "name": "api",
   "version": "1.0.0",
   "description": "Backend config and dependencies",
-  "main": "index.js",
+  "main": "./config/server.js",
   "scripts": {
-    "start": "nodemon ./index.js localhost 8080"
+    "start": "nodemon ./config/server.js localhost 8080"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +13,6 @@
     "cloudinary": "^1.29.1",
     "connect-redis": "^6.1.2",
     "connect-session-sequelize": "^7.1.2",
-    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",

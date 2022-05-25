@@ -3,15 +3,31 @@ const organisationService = require("../services/organisation.service");
 
 const userData = async (req, res) => {
   const { id } = req.session.user;
-
   const response = await userService.getUser(id);
 
   if (response?.status === 200) {
     return res.status(response.status).json({
       message: response?.message,
-      data: response?.data,
+      user: response?.data,
     });
   }
+
+  return res.status(response?.status);
+};
+
+const userOrganisations = async (req, res) => {
+  const { id } = req.session.user;
+
+  const response = await organisationService.fetchUserOrganisations(id);
+
+  if (response?.status === 200) {
+    return res.status(response.status).json({
+      message: response?.message,
+      organisations: response?.data,
+    });
+  }
+
+  return res.status(response?.status);
 };
 
 const userSignup = async (req, res) => {
@@ -19,16 +35,14 @@ const userSignup = async (req, res) => {
 
   const response = await userService.registerUser(fullName, email, password);
 
-  // Adding user session to Redis.
   if (response?.status === 201) {
-    // If the user registration is successful, register the organisation
     try {
-      organisationService.registerOrganisation(organisationName, response.user);
-
       const user = {
-        id: response.userId,
-        email: response.email,
+        id: response?.userId,
+        email: response?.email,
       };
+
+      organisationService.registerOrganisation(organisationName, user);
 
       const hour = 3600000;
 
@@ -61,7 +75,6 @@ const userLogin = async (req, res) => {
 
   const response = await userService.loginUser(email, password);
 
-  // Adding user session to Redis.
   if (response?.status === 200) {
     const user = {
       id: response.userId,
@@ -101,7 +114,7 @@ const userResetPassword = async (req, res) => {
 
   userService.resetUserPassword(email);
 
-  /**
+  /*
    * Always send a status code 200 and success message even if
    * there is no user matching the email.
    *
@@ -142,6 +155,7 @@ const userUploadProfileImage = async (req, res) => {
 
 module.exports = {
   userData,
+  userOrganisations,
   userSignup,
   userLogin,
   userLogout,

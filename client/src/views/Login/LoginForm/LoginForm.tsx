@@ -1,32 +1,17 @@
-import { FC, useContext, useState } from "react";
+import { FC, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { TextField } from "../../../components/forms/TextField/TextField";
 import { PasswordField } from "../../../components/forms/PasswordField/PasswordField";
-import { AuthContext } from "../../../context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { Form, Button, Wrapper, ForgotPasswordText } from "./LoginForm.styles";
 import { Spinner } from "../../../icons/Spinner";
-
-type FormValues = {
-  email?: string;
-  password?: string;
-};
-
-const schema = yup
-  .object({
-    email: yup
-      .string()
-      .email("Must be a valid email address")
-      .required("Email is required"),
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(8, "Password should be at least 8 characters"),
-  })
-  .required();
+import { FormValues, ResponseErrorProps } from "../../../types";
+import { loginFormSchema as schema } from "../../../schema";
+import useAuth from "../../../store/useAuth";
+import { setAuth, setPayload } from "../../../utils/auth";
+import useUser from "../../../store/useUser";
 
 export const LoginForm: FC = () => {
   const {
@@ -35,15 +20,11 @@ export const LoginForm: FC = () => {
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
 
-  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
+  const setAuthState = useAuth((state) => state.setAuth);
+  const fetchUser = useUser((state) => state.fetchUser);
 
   const [loading, setLoading] = useState(false);
-
-  interface ResponseErrorProps {
-    email?: { message: string };
-    password?: { message: string };
-  }
 
   const [responseError, setResponseError] = useState<ResponseErrorProps | null>(
     null
@@ -61,27 +42,16 @@ export const LoginForm: FC = () => {
       .then((res) => {
         if (res.status !== 200) return;
 
-        const hour = 3600000;
-
-        const payload = {
-          id: res.data.user.id,
-          email: res.data.user.email,
-          expiresAt: new Date().getTime() + hour,
-        };
-
-        authContext.setAuthState({
-          type: "setAuth",
-          payload,
-        });
-
-        localStorage.setItem("user", JSON.stringify(payload));
-
         setResponseError(null);
-        // Will automatically take user to dashboard
+
+        const payload = setPayload(res.data);
+        setAuth(payload, setAuthState);
+        fetchUser();
+
         navigate("/");
       })
       .catch((err) => {
-        if (err.response.status === 404) {
+        if (err.response.status === 404 || 400) {
           setResponseError({ email: { message: err.response.data.message } });
         }
 

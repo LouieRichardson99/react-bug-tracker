@@ -7,6 +7,11 @@ const { checkAuthorisation } = require("../middleware/authorisation");
 const userController = require("../controllers/user.controller");
 
 router.get("/", checkAuthorisation, userController.userData);
+router.get(
+  "/organisations",
+  checkAuthorisation,
+  userController.userOrganisations
+);
 
 router.post("/signup", userController.userSignup);
 router.post("/login", userController.userLogin);
@@ -16,7 +21,7 @@ router.get("/logout", userController.userLogout);
 router.post("/reset-password", userController.userResetPassword);
 router.put("/update-password", userController.userUpdatePassword);
 
-// File uploading dependency for '/upload-profile-image'
+// File uploading dependency for image uploads
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 

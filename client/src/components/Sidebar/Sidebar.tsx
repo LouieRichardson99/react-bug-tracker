@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import {
   MenuAlt3Icon,
   HomeIcon,
@@ -7,8 +7,7 @@ import {
   ChartSquareBarIcon,
   UserCircleIcon,
 } from "@heroicons/react/solid";
-import { LogoutIcon } from "@heroicons/react/outline";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Container,
   MenuButton,
@@ -16,35 +15,13 @@ import {
   NavItem,
   Logo,
   FlexWrapper,
-  Button,
   ProfileContainer,
 } from "./Sidebar.styles";
-import axios from "axios";
+import { getCurrentPathname } from "../../utils/navigation";
+import { SignoutButton } from "../button/SignoutButton";
 
 export const Sidebar: FC = () => {
-  const currentLocation = useLocation().pathname;
-  const navigate = useNavigate();
-
   const [minimised, setMinimised] = useState(false);
-
-  const handleSignOut = () => {
-    axios({
-      method: "GET",
-      url: "http://localhost:8080/users/logout",
-      withCredentials: true,
-    }).then(() => {
-      localStorage.removeItem("user");
-      navigate("/login");
-    });
-  };
-
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: "http://localhost:8080/users",
-      withCredentials: true,
-    }).then((res) => console.log(res));
-  }, []);
 
   return (
     <Container>
@@ -62,31 +39,31 @@ export const Sidebar: FC = () => {
 
         <nav>
           <NavList>
-            <NavItem active={currentLocation === "/"}>
+            <NavItem isActive={getCurrentPathname("/")}>
               <Link to="/">
                 <HomeIcon />
                 Dashboard
               </Link>
             </NavItem>
-            <NavItem active={currentLocation === "/organisations"}>
+            <NavItem isActive={getCurrentPathname("/organisations")}>
               <Link to="/organisations">
                 <OfficeBuildingIcon />
                 Organisations
               </Link>
             </NavItem>
-            <NavItem active={currentLocation === "/team-members"}>
+            <NavItem isActive={getCurrentPathname("/team-members")}>
               <Link to="/team-members">
                 <UsersIcon />
                 Team Members
               </Link>
             </NavItem>
-            <NavItem active={currentLocation === "/projects"}>
+            <NavItem isActive={getCurrentPathname("/projects")}>
               <Link to="/projects">
                 <ChartSquareBarIcon />
                 Projects
               </Link>
             </NavItem>
-            <NavItem active={currentLocation === "/settings"}>
+            <NavItem isActive={getCurrentPathname("/settings")}>
               <Link to="/settings">
                 <UserCircleIcon />
                 Settings
@@ -98,11 +75,7 @@ export const Sidebar: FC = () => {
 
       <ProfileContainer>
         <div>{/* User profile */}</div>
-
-        <Button onClick={() => handleSignOut()}>
-          <LogoutIcon />
-          Sign out
-        </Button>
+        <SignoutButton />
       </ProfileContainer>
     </Container>
   );

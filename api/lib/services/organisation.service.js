@@ -2,7 +2,6 @@ const Joi = require("joi");
 const organisationRepository = require("../repository/organisation.repository");
 
 const registerOrganisation = async (organisationName, user) => {
-  // Validate user input
   const schema = Joi.object({
     organisationName: Joi.string().required(),
   });
@@ -15,4 +14,8 @@ const registerOrganisation = async (organisationName, user) => {
   }
 };
 
-module.exports = { registerOrganisation };
+const fetchUserOrganisations = async (userId) => {
+  return organisationRepository.fetchOrganisationsData(userId);
+};
+
+module.exports = { registerOrganisation, fetchUserOrganisations };

@@ -1,39 +1,21 @@
-import { FC, useContext, useState } from "react";
+import React, { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { TextField } from "../../../components/forms/TextField/TextField";
 import { PasswordField } from "../../../components/forms/PasswordField/PasswordField";
-import { AuthContext } from "../../../context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { Form, Button } from "./SignupForm.styles";
 import { Spinner } from "../../../icons/Spinner";
-
-type FormValues = {
-  fullName?: string;
-  email?: string;
-  organisationName?: string;
-  password?: string;
-};
-
-const schema = yup
-  .object({
-    fullName: yup.string().required("Full name is required"),
-    email: yup
-      .string()
-      .email("Must be a valid email address")
-      .required("Email is required"),
-    organisationName: yup.string().required("Organisation name is required"),
-    password: yup
-      .string()
-      .required("Password is required")
-      .matches(
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/,
-        "Password must have at least eight characters, one upper case letter, one lower case letter, and one number"
-      ),
-  })
-  .required();
+import useAuth from "../../../store/useAuth";
+import {
+  FormValues,
+  OnChangeErrorProps,
+  ResponseErrorProps,
+} from "../../../types";
+import { setPayload, setAuth } from "../../../utils/auth";
+import { signupFormSchema as schema } from "../../../schema";
+import useUser from "../../../store/useUser";
 
 export const SignupForm: FC = () => {
   const {
@@ -41,69 +23,22 @@ export const SignupForm: FC = () => {
     register,
     formState: { errors },
   } = useForm<FormValues>({ resolver: yupResolver(schema) });
-  const authContext = useContext(AuthContext);
+
   const navigate = useNavigate();
+  const setAuthState = useAuth((state) => state.setAuth);
+  const fetchUser = useUser((state) => state.fetchUser);
 
   const [loading, setLoading] = useState(false);
-
-  interface ResponseErrorProps {
-    email?: { message: string };
-  }
 
   const [responseError, setResponseError] = useState<ResponseErrorProps | null>(
     null
   );
 
-  interface OnChangeErrorProps {
-    password?: { message: string };
-  }
-
   const [onChangeError, setOnChangeError] = useState<OnChangeErrorProps | null>(
     null
   );
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    setLoading(true);
-
-    axios({
-      method: "POST",
-      url: "http://localhost:8080/users/signup",
-      data,
-      withCredentials: true,
-    })
-      .then((res) => {
-        if (res.status !== 201) return;
-
-        const hour = 3600000;
-
-        const payload = {
-          id: res.data.user.id,
-          email: res.data.user.email,
-          expiresAt: new Date().getTime() + hour,
-        };
-
-        authContext.setAuthState({
-          type: "setAuth",
-          payload,
-        });
-
-        localStorage.setItem("user", JSON.stringify(payload));
-
-        setResponseError(null);
-        // Will automatically take user to dashboard
-        navigate("/");
-      })
-      .catch((err) => {
-        if (err.response.status === 409) {
-          setResponseError({ email: { message: err.response.data.message } });
-        }
-
-        throw new Error(err.response.data.message);
-      })
-      .finally(() => setLoading(false));
-  };
-
-  const handlePasswordStrength = (e: { target: { value: string } }) => {
+  function handlePasswordStrength(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.value === "") {
       return setOnChangeError(null);
     }
@@ -124,6 +59,36 @@ export const SignupForm: FC = () => {
     }
 
     return setOnChangeError(null);
+  }
+
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    setLoading(true);
+
+    axios({
+      method: "POST",
+      url: "http://localhost:8080/users/signup",
+      data,
+      withCredentials: true,
+    })
+      .then((res) => {
+        if (res.status !== 201) return;
+
+        setResponseError(null);
+
+        const payload = setPayload(res.data);
+        setAuth(payload, setAuthState);
+        fetchUser();
+
+        navigate("/");
+      })
+      .catch((err) => {
+        if (err.response.status === 409 || 400) {
+          setResponseError({ email: { message: err.response.data.message } });
+        }
+
+        throw new Error(err.response.data.message);
+      })
+      .finally(() => setLoading(false));
   };
 
   return (

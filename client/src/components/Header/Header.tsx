@@ -1,10 +1,9 @@
 import { FC } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Container, Logo, Navigation, NavItem } from "./Header.styles";
+import { getCurrentPathname } from "../../utils/navigation";
 
 export const Header: FC = () => {
-  const currentLocation = useLocation().pathname;
-
   return (
     <Container>
       <Logo>
@@ -12,10 +11,10 @@ export const Header: FC = () => {
       </Logo>
       <Navigation>
         <ul>
-          <NavItem active={currentLocation === "/login"}>
+          <NavItem isActive={getCurrentPathname("/login")}>
             <Link to="/login">Sign in</Link>
           </NavItem>
-          <NavItem active={currentLocation === "/signup"}>
+          <NavItem isActive={getCurrentPathname("/signup")}>
             <Link to="/signup">Register</Link>
           </NavItem>
         </ul>

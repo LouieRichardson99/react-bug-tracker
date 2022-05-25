@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 interface NavItemProps {
-  readonly active: boolean;
+  readonly isActive: boolean;
 }
 
 export const Container = styled.header`
@@ -46,8 +46,8 @@ export const Navigation = styled.nav`
 export const NavItem = styled.li<NavItemProps>`
   & > a {
     text-decoration: none;
-    color: ${({ active, theme }) =>
-      active ? theme.colors.green : theme.colors.body};
+    color: ${({ isActive, theme }) =>
+      isActive ? theme.colors.green : theme.colors.body};
 
     &:hover {
       text-decoration: underline;

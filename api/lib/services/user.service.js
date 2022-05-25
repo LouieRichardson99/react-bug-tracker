@@ -16,9 +16,9 @@ const registerUser = async (fullName, email, password) => {
   // Validate user input
   const schema = Joi.object({
     fullName: Joi.string().required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().email().message("Invalid email address").required(),
     password: Joi.string().required().pattern(
-      /**
+      /*
        * Minimum of eight characters with at least one upper case letter, one lower case letter,
        * and one number
        */
@@ -39,14 +39,14 @@ const registerUser = async (fullName, email, password) => {
 
     return userRepository.registerUser(fullName, email, hashedPassword);
   } catch (err) {
-    return { status: 400, message: err.details };
+    return { status: 400, message: err.details[0].message };
   }
 };
 
 const loginUser = async (email, password) => {
   // Validate user input
   const schema = Joi.object({
-    email: Joi.string().email().required(),
+    email: Joi.string().email().message("Invalid email address").required(),
     password: Joi.string().required(),
   });
 
@@ -58,7 +58,7 @@ const loginUser = async (email, password) => {
 
     return userRepository.loginUser(email, password);
   } catch (err) {
-    return { status: 400, message: err.details };
+    return { status: 400, message: err.details[0].message };
   }
 };
 
@@ -124,7 +124,7 @@ const updateUserPassword = async (token, password, repeatPassword) => {
     // Validate user input
     const schema = Joi.object({
       password: Joi.string().required().pattern(
-        /**
+        /*
          * Minimum of eight characters with at least one upper case letter, one lower case letter,
          * and one number
          */

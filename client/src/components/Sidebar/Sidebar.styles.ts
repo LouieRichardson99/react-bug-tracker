@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 interface NavItemProps {
-  readonly active: boolean;
+  readonly isActive: boolean;
 }
 
 export const Container = styled.div`
@@ -58,13 +58,13 @@ export const NavList = styled.ul`
 `;
 
 export const NavItem = styled.li<NavItemProps>`
-  background-color: ${({ active, theme }) =>
-    active ? theme.colors.green : "hsl(0, 0%, 100%)"};
+  background-color: ${({ isActive, theme }) =>
+    isActive ? theme.colors.green : "hsl(0, 0%, 100%)"};
   border-radius: 5px;
 
   & > a {
-    color: ${({ active, theme }) =>
-      active ? "hsl(0, 0%, 100%)" : theme.colors.body};
+    color: ${({ isActive, theme }) =>
+      isActive ? "hsl(0, 0%, 100%)" : theme.colors.body};
     text-decoration: none;
     display: flex;
     gap: 0.5rem;
@@ -73,25 +73,6 @@ export const NavItem = styled.li<NavItemProps>`
   }
 
   & svg {
-    width: 1.25rem;
-  }
-`;
-
-export const Button = styled.button`
-  background-color: hsl(0, 0%, 100%);
-  border: none;
-  padding: 0.75rem;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  display: flex;
-  gap: 0.5rem;
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.body};
-  border-radius: 5px;
-  cursor: pointer;
-
-  & > svg {
     width: 1.25rem;
   }
 `;
